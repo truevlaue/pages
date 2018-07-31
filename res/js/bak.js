@@ -32,6 +32,7 @@ let vueApp = new Vue({
         // # web3 providers
         isMetaMaskEnabled: false,
         web3: null, // meta mask etc provider
+        siteWeb3Provider: null,
 
 
         // # services
@@ -54,11 +55,12 @@ let vueApp = new Vue({
 
             if (t.isMetaMaskEnabled) {
                 t.web3 = window.web3;
-                console.log("use MetaMask");
             } else {
-                t.web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"));
-                console.log("use infura service");
+                console.log("meta mask provider not available.");
             }
+
+            // #  init site web3 provider
+            t.siteWeb3Provider = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 
             // # instantiate the qr code plugin
@@ -67,7 +69,76 @@ let vueApp = new Vue({
             // # start render rq codes.
             t.renderQrCodes();
 
+            // # init contracts
+            t.bonusService = t.siteWeb3Provider.eth.contract(BonusServiceABI).at(ContractAddresses.BonusServiceImpl);
+            t.tokenService = t.siteWeb3Provider.eth.contract(TokenServiceABI).at(ContractAddresses.TokenServiceImpl);
+
+
         },
+
+
+        // ## ===== bank ====
+        transfer2bank: function () {
+            console.log("transfer2bank");
+            let t = this;
+            t.sendEth(bankConfig);
+        },
+
+
+        // ## =================================== bonus ===================================
+        investBonus: function () {
+            console.log("investBonus");
+            let t = this;
+            t.sendEth(bonusInvestConfig);
+        },
+
+        divestBonus: function () {
+            console.log("divestBonus");
+            let t = this;
+            t.sendEth(bonusDivestConfig);
+        },
+        withdrawBonusProfit: function () {
+            console.log("withdrawBonusProfit");
+            let t = this;
+            t.sendEth(withdrawBonusProfitConfig);
+        },
+        viewUserBonus: function () {
+            let t = this;
+
+            let userAccount = "";
+            let userBonus = t.bonusService.getCurrentInvest.call(userAccount);
+
+        },
+
+        viewUserBonusProfit: function () {
+            let t = this;
+            let userAccount = "";
+            let userBonusProfit = t.bonusService.getCurrentProfit.call(userAccount);
+
+        },
+
+        // ##  =================================== token ===================================
+        investToken: function () {
+            console.log("investToken");
+            let t = this;
+            t.sendEth(tokenInvestConfig);
+        },
+
+        withdrawTokenProfit: function () {
+            console.log("withdrawTokenProfit");
+            let t = this;
+            t.sendEth(withdrawTokenProfitConfig);
+        },
+
+        viewUserTokenProfit: function () {
+
+        },
+
+        // ## ===================================  slot game ===================================
+        betSlot: function () {
+
+        },
+
 
         // ##  =================================== utils ===================================
         renderQrCodes: function () {
