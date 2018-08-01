@@ -116,7 +116,8 @@
                     <li>xxxx</li>
                     <li>xxx</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken1EthViaBrowser()">With
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken1EthViaBrowser()"
+                        v-if="browserWeb3Enabled">With
                     MetaMask
                 </button>
             </div>
@@ -136,7 +137,8 @@
                     <li>Priority email support</li>
                     <li>Help center access</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken10EthViaBrowser()">
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken10EthViaBrowser()"
+                        v-if="browserWeb3Enabled">
                     With MetaMask
                 </button>
             </div>
@@ -156,7 +158,8 @@
                     <li>Phone and email support</li>
                     <li>Help center access</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken100EthViaBrowser()">
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investToken100EthViaBrowser()"
+                        v-if="browserWeb3Enabled">
                     With MetaMask
                 </button>
             </div>
@@ -184,7 +187,8 @@
                     <li>xxxx</li>
                     <li>xxx</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus1EthViaBrowser()">With
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus1EthViaBrowser()"
+                        v-if="browserWeb3Enabled">With
                     MetaMask
                 </button>
             </div>
@@ -204,7 +208,8 @@
                     <li>Priority email support</li>
                     <li>Help center access</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus10EthViaBrowser()">
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus10EthViaBrowser()"
+                        v-if="browserWeb3Enabled">
                     With MetaMask
                 </button>
             </div>
@@ -224,7 +229,8 @@
                     <li>Phone and email support</li>
                     <li>Help center access</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus100EthViaBrowser()">
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="investBonus100EthViaBrowser()"
+                        v-if="browserWeb3Enabled">
                     With MetaMask
                 </button>
             </div>

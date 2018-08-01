@@ -166,7 +166,7 @@ let vueApp = new Vue({
     el: '#vueEl',
     data: {
         // # web3 providers
-        isMetaMaskEnabled: false,
+        browserWeb3Enabled: false,
         browserWeb3: null, // meta mask etc provider
         providerWeb3: null, // meta mask etc provider
 
@@ -183,9 +183,9 @@ let vueApp = new Vue({
             let t = this;
 
             // # init meta mask alike web3 provider
-            t.isMetaMaskEnabled = !!window.web3;
+            t.browserWeb3Enabled = !!window.web3;
 
-            if (t.isMetaMaskEnabled) {
+            if (t.browserWeb3Enabled) {
                 t.browserWeb3 = window.web3;
                 console.log("use MetaMask");
             }
