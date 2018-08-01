@@ -1,10 +1,10 @@
-// define working dir root
+// # define working dir root
 def rootPath = new File(".").getCanonicalPath()
 
-// timestamp
+// # timestamp
 def timestamp = "built at ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
 
-// compile basic pages
+// # compile basic pages
 def map = [:]
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
@@ -38,7 +38,7 @@ new File("${rootPath}/src").eachFile { file ->
     }
 }
 
-// compile js
+// # compile js
 def jsMap = [:]
 new File("${rootPath}/src/js").eachFile { file ->
     if (!file.isDirectory()) {
@@ -73,7 +73,7 @@ new File("${rootPath}/src/js").eachFile { file ->
     }
 }
 
-// copy resources
+// # copy resources
 String sourceDir = "${rootPath}/src/res"
 String destinationDir = "${rootPath}/docs/res"
 
