@@ -3,7 +3,7 @@ def rootPath = new File(".").getCanonicalPath()
 
 // collect widgets
 def map = [:]
-new File("${rootPath}/pages").eachFile { file ->
+new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
         def fileName = file.getName()
         if (fileName.startsWith("_"))
@@ -13,7 +13,7 @@ new File("${rootPath}/pages").eachFile { file ->
 }
 
 // compile basic pages
-new File("${rootPath}/pages").eachFile { file ->
+new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
         def fileName = file.getName()
 
