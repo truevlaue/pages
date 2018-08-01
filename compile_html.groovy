@@ -5,18 +5,18 @@ def rootPath = new File(".").getCanonicalPath()
 def timestamp = "built at ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
 
 // # compile basic pages
-def map = [:]
+def htmlMap = [:]
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
         def fileName = file.getName()
         if (fileName.startsWith("_"))
-            map.put fileName, file.text
+            htmlMap.put fileName, file.text
     }
 
 }
 
 
-map.put "_RP_CURRENT_TIME", "${System.currentTimeMillis()}"
+htmlMap.put "_RP_CURRENT_TIME", "${System.currentTimeMillis()}"
 
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
@@ -25,7 +25,7 @@ new File("${rootPath}/src").eachFile { file ->
         if (!fileName.startsWith("_")) {
             def html = file.text
 
-            map.each { name, text ->
+            htmlMap.each { name, text ->
                 html = html.replaceAll(name, text)
             }
 
