@@ -1,0 +1,227 @@
+let ContractAddresses = {
+    BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
+    BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
+    CommonStorage: '0x21705d84182b45bbf4be8a61a1691300232b3139',
+    Migrations: '0x2b2929aaa8542f6dc7f1cf9d37340734b3893c44',
+    StandardToken: '0x56c71b77416b097fec1aec314e12b89ea4684e36',
+    TokenServiceImpl: '0xd6ea6f5a0ab768321b3585902e89a2b2a5ead6d1'
+};
+
+let TransactionConfigs = {
+
+    // bonus transactions
+    bonusInvest1Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest1EthQr'
+    }
+    , bonusInvest10Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest10EthQr'
+    }
+    , bonusInvest100Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest100EthQr'
+    }
+    , bonusDivest: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'bonusDivestQr'
+    }
+    , bonusWithdrawProfit: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'bonusWithdrawProfitQr'
+    }
+
+    // token transactions
+    , tokenInvest1Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'tokenInvest1EthQr'
+    }
+    , tokenInvest10Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 10,
+        uom: 'ether',
+        selector: 'tokenInvest10EthQr'
+    }
+    , tokenInvest100Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 100,
+        uom: 'ether',
+        selector: 'tokenInvest100EthQr'
+    }
+    , tokenWithdrawProfit: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'tokenWithdrawProfitQr'
+    }
+
+    // common withdraw : withdraw user balance (game rewards ,spread rewards etc. )
+    , balanceWithdraw: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'balanceWithdrawQr'
+    }
+};
+
+let ABIs = {
+    BonusServiceABI: "",
+    TokenServiceABI: "",
+};
+
+let QrCodeUtils = {
+    qrGenerator: new EthereumQRPlugin(),
+    drawQrCode: function (_config, _web3) {
+        const configDetails = {
+            size: _config.size || 180,
+            selector: '#' + _config.selector,
+            options: {
+                margin: _config.margin || 2
+            }
+        };
+
+        const transactionDetail = {
+            to: _config.to,
+            value: _web3.toWei(_config.value, _config.uom),
+            gas: _config.gas
+        };
+
+        this.qrGenerator.toCanvas(transactionDetail, configDetails);
+    }
+
+    , drawQrCodes: function (_configs, _web3) {
+        for (let i = 0; i < _configs.length; i++) {
+            this.drawQrCode(_configs[i], _web3);
+        }
+    }
+};
+
+
+
+
+let Web3Utils = {
+    sendEth: function (_config, _web3) {
+        _web3.eth.sendTransaction(
+            {
+                to: _config.to,
+                value: _web3.toWei(_config.value, _config.uom),
+                gas: _config.gas,
+                data: _web3.toHex(123)
+            },
+            function (error, hash) {
+                if (error) {
+                    console.log("error happens");
+                    console.log(error);
+                } else {
+                    console.log("tx ok");
+                    console.log(hash);
+                }
+                // _config.callback(error, hash);
+            }
+        );
+    }
+};
+
+
+let QrList = [
+    TransactionConfigs.bonusInvest1Eth,
+    TransactionConfigs.bonusInvest10Eth,
+    TransactionConfigs.bonusInvest100Eth,
+    TransactionConfigs.tokenInvest1Eth,
+    TransactionConfigs.tokenInvest10Eth,
+    TransactionConfigs.tokenInvest100Eth,
+];
+
+
+let vueApp = new Vue({
+    el: '#vueEl',
+    data: {
+        // # web3 providers
+        isMetaMaskEnabled: false,
+        browserWeb3: null, // meta mask etc provider
+        providerWeb3: null, // meta mask etc provider
+
+        // # services
+        bonusService: null,
+        tokenService: null
+    }
+
+    , methods: {
+
+        init: function () {
+
+            // # rename this
+            let t = this;
+
+            // # init meta mask alike web3 provider
+            t.isMetaMaskEnabled = !!window.web3;
+
+            if (t.isMetaMaskEnabled) {
+                t.browserWeb3 = window.web3;
+                console.log("use MetaMask");
+            }
+
+            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"));
+
+            // # start render rq codes.
+            QrCodeUtils.drawQrCodes(QrList, t.providerWeb3);
+
+        }
+
+        // bonus invest
+        , investBonus1EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.bonusInvest1Eth, t.browserWeb3);
+        }
+        , investBonus10EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.bonusInvest10Eth, t.browserWeb3);
+        }
+        , investBonus100EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.bonusInvest100Eth, t.browserWeb3);
+        }
+
+        // token invest
+        , investToken1EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.tokenInvest1Eth, t.browserWeb3);
+        }
+        , investToken10EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.tokenInvest10Eth, t.browserWeb3);
+        }
+        , investToken100EthViaBrowser: function () {
+            let t = this;
+            Web3Utils.sendEth(TransactionConfigs.tokenInvest100Eth, t.browserWeb3);
+        }
+
+    }
+});
+
+
+$(function () {
+    vueApp.init();
+});

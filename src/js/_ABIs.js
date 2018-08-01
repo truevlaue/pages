@@ -1,0 +1,4 @@
+let ABIs = {
+    BonusServiceABI: "",
+    TokenServiceABI: "",
+};
