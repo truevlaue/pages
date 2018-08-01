@@ -6,9 +6,13 @@
 
 
 let QrList = [
+
+    // bonus
     TransactionConfigs.bonusInvest1Eth,
     TransactionConfigs.bonusInvest10Eth,
     TransactionConfigs.bonusInvest100Eth,
+
+    // token
     TransactionConfigs.tokenInvest1Eth,
     TransactionConfigs.tokenInvest10Eth,
     TransactionConfigs.tokenInvest100Eth,
@@ -19,13 +23,24 @@ let vueApp = new Vue({
     el: '#vueEl',
     data: {
         // # web3 providers
-        browserWeb3Enabled: false,
-        browserWeb3: null, // meta mask etc provider
-        providerWeb3: null, // meta mask etc provider
+        browserWeb3Enabled: false
+        , browserWeb3: null // meta mask etc provider
+        , providerWeb3: null // meta mask etc provider
 
         // # services
-        bonusService: null,
-        tokenService: null
+        , bonusService: null
+        , tokenService: null
+
+        // token
+        , tokenDistributedPer: 40
+        , tokenTotal: 210000000
+
+        // bonus
+        , bonusTotal: 1000
+        , bonusProfitTotal: 123123
+
+        // spread
+        , spreadRewardTotal: 234234
     }
 
     , methods: {

@@ -1,4 +1,4 @@
-//built at 2018-08-01 16:06:25
+//built at 2018-08-01 17:33:35
 let ContractAddresses = {
     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
     BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
@@ -154,9 +154,13 @@ let Web3Utils = {
 
 
 let QrList = [
+
+    // bonus
     TransactionConfigs.bonusInvest1Eth,
     TransactionConfigs.bonusInvest10Eth,
     TransactionConfigs.bonusInvest100Eth,
+
+    // token
     TransactionConfigs.tokenInvest1Eth,
     TransactionConfigs.tokenInvest10Eth,
     TransactionConfigs.tokenInvest100Eth,
@@ -167,13 +171,24 @@ let vueApp = new Vue({
     el: '#vueEl',
     data: {
         // # web3 providers
-        browserWeb3Enabled: false,
-        browserWeb3: null, // meta mask etc provider
-        providerWeb3: null, // meta mask etc provider
+        browserWeb3Enabled: false
+        , browserWeb3: null // meta mask etc provider
+        , providerWeb3: null // meta mask etc provider
 
         // # services
-        bonusService: null,
-        tokenService: null
+        , bonusService: null
+        , tokenService: null
+
+        // token
+        , tokenDistributedPer: 40
+        , tokenTotal: 210000000
+
+        // bonus
+        , bonusTotal: 1000
+        , bonusProfitTotal: 123123
+
+        // spread
+        , spreadRewardTotal: 234234
     }
 
     , methods: {
