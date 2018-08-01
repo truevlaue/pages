@@ -96,6 +96,97 @@ _topMenu.html
 
 
 
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Bonus Divest</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$0
+                    <small class="text-muted">/ mo</small>
+                </h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <div id="bonusDivestQr"></div>
+                    <li>xxx</li>
+                    <li>xxxx</li>
+                    <li>xxx</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="divestBonusViaBrowser()"
+                        v-if="browserWeb3Enabled">With
+                    MetaMask
+                </button>
+            </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Bonus Withdraw Profit</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$15
+                    <small class="text-muted">/ mo</small>
+                </h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <div id="bonusWithdrawProfitQr"></div>
+                    <li>20 users included</li>
+                    <li>10 GB of storage</li>
+                    <li>Priority email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="withdrawBonusProfitViaBrowser()"
+                        v-if="browserWeb3Enabled">
+                    With MetaMask
+                </button>
+            </div>
+        </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Token Withdraw Profit</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$29
+                    <small class="text-muted">/ mo</small>
+                </h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <div id="tokenWithdrawProfitQr"></div>
+                    <li>30 users included</li>
+                    <li>15 GB of storage</li>
+                    <li>Phone and email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="withdrawTokenProfitViaBrowser()"
+                        v-if="browserWeb3Enabled">
+                    With MetaMask
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-deck mb-3 text-center">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 font-weight-normal">Token Withdraw Profit</h4>
+            </div>
+            <div class="card-body">
+                <h1 class="card-title pricing-card-title">$29
+                    <small class="text-muted">/ mo</small>
+                </h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <div id="balanceWithdrawQr"></div>
+                    <li>30 users included</li>
+                    <li>15 GB of storage</li>
+                    <li>Phone and email support</li>
+                    <li>Help center access</li>
+                </ul>
+                <button type="button" class="btn btn-lg btn-block btn-primary" @click="withdrawDirectBalanceViaBrowser()"
+                        v-if="browserWeb3Enabled">
+                    With MetaMask
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     _footer.html

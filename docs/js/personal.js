@@ -1,4 +1,4 @@
-//built at 2018-08-01 17:55:06
+//built at 2018-08-01 18:34:01
 let ContractAddresses = {
     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
     BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
@@ -156,14 +156,15 @@ let Web3Utils = {
 let QrList = [
 
     // bonus
-    TransactionConfigs.bonusInvest1Eth,
-    TransactionConfigs.bonusInvest10Eth,
-    TransactionConfigs.bonusInvest100Eth,
+    TransactionConfigs.bonusDivest,
+    TransactionConfigs.bonusWithdrawProfit,
 
     // token
-    TransactionConfigs.tokenInvest1Eth,
-    TransactionConfigs.tokenInvest10Eth,
-    TransactionConfigs.tokenInvest100Eth,
+    TransactionConfigs.tokenWithdrawProfit,
+
+    // direct balance
+    TransactionConfigs.balanceWithdraw
+
 ];
 
 
@@ -214,31 +215,26 @@ let vueApp = new Vue({
         }
 
         // bonus invest
-        , investBonus1EthViaBrowser: function () {
+        , divestBonusViaBrowser: function () {
             let t = this;
-            Web3Utils.sendEth(TransactionConfigs.bonusInvest1Eth, t.browserWeb3);
+            Web3Utils.sendEth(TransactionConfigs.bonusDivest, t.browserWeb3);
         }
-        , investBonus10EthViaBrowser: function () {
+        , withdrawBonusProfitViaBrowser: function () {
             let t = this;
-            Web3Utils.sendEth(TransactionConfigs.bonusInvest10Eth, t.browserWeb3);
-        }
-        , investBonus100EthViaBrowser: function () {
-            let t = this;
-            Web3Utils.sendEth(TransactionConfigs.bonusInvest100Eth, t.browserWeb3);
+            Web3Utils.sendEth(TransactionConfigs.bonusWithdrawProfit, t.browserWeb3);
         }
 
         // token invest
-        , investToken1EthViaBrowser: function () {
+        , withdrawTokenProfitViaBrowser: function () {
             let t = this;
-            Web3Utils.sendEth(TransactionConfigs.tokenInvest1Eth, t.browserWeb3);
+            Web3Utils.sendEth(TransactionConfigs.tokenWithdrawProfit, t.browserWeb3);
         }
-        , investToken10EthViaBrowser: function () {
+
+
+        // direct balance
+        , withdrawDirectBalanceViaBrowser: function () {
             let t = this;
-            Web3Utils.sendEth(TransactionConfigs.tokenInvest10Eth, t.browserWeb3);
-        }
-        , investToken100EthViaBrowser: function () {
-            let t = this;
-            Web3Utils.sendEth(TransactionConfigs.tokenInvest100Eth, t.browserWeb3);
+            Web3Utils.sendEth(TransactionConfigs.balanceWithdraw, t.browserWeb3);
         }
 
     }
