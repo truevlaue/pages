@@ -1,7 +1,10 @@
 // define working dir root
 def rootPath = new File(".").getCanonicalPath()
 
-// collect widgets
+// timestamp
+def timestamp = "built at ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
+
+// compile basic pages
 def map = [:]
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
@@ -12,7 +15,6 @@ new File("${rootPath}/src").eachFile { file ->
 
 }
 
-// compile basic pages
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
         def fileName = file.getName()
@@ -23,6 +25,9 @@ new File("${rootPath}/src").eachFile { file ->
             map.each { name, text ->
                 html = html.replaceAll(name, text)
             }
+
+            html = "<!--${timestamp}-->\n\r" + html
+
             new File("${rootPath}/docs/${fileName}").newWriter().withWriter { w ->
                 w << html
             }
@@ -31,7 +36,6 @@ new File("${rootPath}/src").eachFile { file ->
 }
 
 // compile js
-
 def jsMap = [:]
 new File("${rootPath}/src/js").eachFile { file ->
     if (!file.isDirectory()) {
@@ -51,13 +55,16 @@ new File("${rootPath}/src/js").eachFile { file ->
         def fileName = file.getName()
 
         if (!fileName.startsWith("_")) {
-            def html = file.text
+            def jsCode = file.text
 
             jsMap.each { name, text ->
-                html = html.replaceAll("//${name}", text)
+                jsCode = jsCode.replaceAll("//${name}", text)
             }
+
+            jsCode = "//${timestamp}\n\r" + jsCode
+
             new File("${rootPath}/docs/js/${fileName}").newWriter().withWriter { w ->
-                w << html
+                w << jsCode
             }
         }
     }
@@ -72,6 +79,6 @@ new AntBuilder().copy(todir: destinationDir) {
 }
 
 
-
+println "${timestamp} ended"
 
 

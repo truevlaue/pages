@@ -1,4 +1,5 @@
-// let ContractAddresses = {
+//built at 2018-08-01 16:06:25
+// let ContractAddresses = {
 //     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
 //     BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
 //     CommonStorage: '0x21705d84182b45bbf4be8a61a1691300232b3139',
