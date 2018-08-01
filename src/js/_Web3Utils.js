@@ -1,5 +1,12 @@
 let Web3Utils = {
     sendEth: function (_config, _web3) {
+
+
+        if (!_web3) {
+            alert("Web3 (like MetaMask ) not enabled");
+            return;
+        }
+
         _web3.eth.sendTransaction(
             {
                 to: _config.to,
