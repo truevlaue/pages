@@ -15,6 +15,9 @@ new File("${rootPath}/src").eachFile { file ->
 
 }
 
+
+map.put "_RP_CURRENT_TIME", "${System.currentTimeMillis()}"
+
 new File("${rootPath}/src").eachFile { file ->
     if (!file.isDirectory()) {
         def fileName = file.getName()
