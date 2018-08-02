@@ -1,3 +1,4 @@
+//_Definitions.js
 //_ContractAddresses.js
 //_TransactionConfigs.js
 //_ABIs.js
@@ -55,10 +56,10 @@ let vueApp = new Vue({
 
             if (t.browserWeb3Enabled) {
                 t.browserWeb3 = window.web3;
-                console.log("use MetaMask");
+                log("use MetaMask");
             }
 
-            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"));
+            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider(Definitions.infuraProviderUrl));
 
             // # start render rq codes.
             QrCodeUtils.drawQrCodes(QrList, t.providerWeb3);
@@ -98,5 +99,9 @@ let vueApp = new Vue({
 
 
 $(function () {
-    vueApp.init();
+    try {
+        vueApp.init();
+    } catch (e) {
+        log(e);
+    }
 });

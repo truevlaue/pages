@@ -1,348 +1,216 @@
-//built at 2018-08-02 11:09:25
-let ContractAddresses = {
+//built at 2018-08-02 15:25:40
+let Definitions = {
+    infuraProviderUrl: "https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"
+};
+
+let log = function (obj) {
+    console.log("obj = " + obj);
+    console.log("obj.json = " + JSON.stringify(obj));
+};
+let ContractAddresses = {
     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
     BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
     CommonStorage: '0x21705d84182b45bbf4be8a61a1691300232b3139',
     Migrations: '0x2b2929aaa8542f6dc7f1cf9d37340734b3893c44',
     StandardToken: '0x56c71b77416b097fec1aec314e12b89ea4684e36',
-    TokenServiceImpl: '0xd6ea6f5a0ab768321b3585902e89a2b2a5ead6d1',
-    Slot: '0xc1ab0c83e44747794ec4b3d27addb3dcbd9ac6ca'
+    TokenServiceImpl: '0xd6ea6f5a0ab768321b3585902e89a2b2a5ead6d1'
 };
 
+let TransactionConfigs = {
 
-const BonusServiceABI = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_who",
-                "type": "address"
-            }
-        ],
-        "name": "getCurrentProfit",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_who",
-                "type": "address"
-            }
-        ],
-        "name": "getCurrentInvest",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
+    // bonus transactions
+    bonusInvest1Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest1EthQr'
     }
-];
-const TokenServiceABI = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_who",
-                "type": "address"
-            }
-        ],
-        "name": "getCurrentTokens",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_who",
-                "type": "address"
-            }
-        ],
-        "name": "getCurrentProfit",
-        "outputs": [
-            {
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
+    , bonusInvest10Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest10EthQr'
     }
-];
+    , bonusInvest100Eth: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'bonusInvest100EthQr'
+    }
+    , bonusDivest: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'bonusDivestQr'
+    }
+    , bonusWithdrawProfit: {
+        to: ContractAddresses.BonusServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'bonusWithdrawProfitQr'
+    }
 
+    // token transactions
+    , tokenInvest1Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 1,
+        uom: 'ether',
+        selector: 'tokenInvest1EthQr'
+    }
+    , tokenInvest10Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 10,
+        uom: 'ether',
+        selector: 'tokenInvest10EthQr'
+    }
+    , tokenInvest100Eth: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 100,
+        uom: 'ether',
+        selector: 'tokenInvest100EthQr'
+    }
+    , tokenWithdrawProfit: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'tokenWithdrawProfitQr'
+    }
 
-// send eth configs
-let bonusInvestConfig = {
-    to: ContractAddresses.BonusServiceImpl,
-    gas: 210000,
-    value: 1,
-    uom: 'ether',
-    selector: 'bonusInvestCode'
+    // common withdraw : withdraw user balance (game rewards ,spread rewards etc. )
+    , balanceWithdraw: {
+        to: ContractAddresses.TokenServiceImpl,
+        gas: 210000,
+        value: 0,
+        uom: 'ether',
+        selector: 'balanceWithdrawQr'
+    }
 };
 
-let bonusDivestConfig = {
-    to: ContractAddresses.BonusServiceImpl,
-    gas: 210000,
-    value: 1,
-    uom: 'wei',
-    selector: 'bonusDivestCode'
+let ABIs = {
+    BonusServiceABI: "",
+    TokenServiceABI: "",
 };
 
-let withdrawBonusProfitConfig = {
-    to: ContractAddresses.BonusServiceImpl,
-    gas: 210000,
-    value: 0,
-    uom: 'ether',
-    selector: 'bonusWithdrawProfitCode'
+let Web3Utils = {
+    sendEth: function (_config, _web3) {
+
+
+        if (!_web3) {
+            alert("Web3 (like MetaMask ) not enabled");
+            return;
+        }
+
+        _web3.eth.sendTransaction(
+            {
+                to: _config.to,
+                value: _web3.toWei(_config.value, _config.uom),
+                gas: _config.gas,
+                data: _web3.toHex(123)
+            },
+            function (error, hash) {
+                if (error) {
+                    console.log("error happens");
+                    console.log(error);
+                } else {
+                    console.log("tx ok");
+                    console.log(hash);
+                }
+                // _config.callback(error, hash);
+            }
+        );
+    }
 };
-
-let tokenInvestConfig = {
-    to: ContractAddresses.TokenServiceImpl,
-    gas: 210000,
-    value: 1,
-    uom: 'ether',
-    selector: 'tokenInvestCode'
-};
-
-let withdrawTokenProfitConfig = {
-    to: ContractAddresses.TokenServiceImpl,
-    gas: 210000,
-    value: 0,
-    uom: 'ether',
-    selector: 'tokenWithdrawProfitCode'
-};
-
-let betSlotGameConfig = {to: ContractAddresses.Slot, gas: 210000, value: 0, uom: 'ether', selector: 'slotGameCode'};
-
-
-let bankConfig = {
-    to: ContractAddresses.CommonStorage,
-    gas: 210000,
-    value: 1,
-    uom: 'ether',
-    selector: 'bank'
-
-};
-
-let QrList = [
-    // Bonus Invest Code
-    bonusInvestConfig,
-
-    // Bonus Divest Code
-    bonusDivestConfig,
-
-    // Bonus Withdraw Profit Code
-    withdrawBonusProfitConfig,
-
-    // Token Invest Code
-    tokenInvestConfig,
-
-    // Token Withdraw Profit Code
-    withdrawTokenProfitConfig,
-
-    // Slot Game Bet Code
-    betSlotGameConfig
-
-];
 
 
 let vueApp = new Vue({
     el: '#vueEl',
     data: {
-        title: 'chain casino',
-        qrGenerator: null,
-
         // # web3 providers
-        isMetaMaskEnabled: false,
-        web3: null, // meta mask etc provider
-        siteWeb3Provider: null,
-
+        browserWeb3Enabled: false
+        , browserWeb3: null // meta mask etc provider
+        , providerWeb3: null // meta mask etc provider
 
         // # services
-        bonusService: null,
-        tokenService: null
+        , bonusService: null
+        , tokenService: null
 
-        // # games
+
+        // address role
+
+        // inner contract
+
+        // period job
+        , periodJobInterval
+
+        // partner contract
+
+        // configurations
+        ,
+
     }
 
     , methods: {
 
-
+        // # init page
         init: function () {
 
-            // # rename this
+            //  rename this
             let t = this;
 
-            // # init meta mask alike web3 provider
-            t.isMetaMaskEnabled = !!window.web3;
+            //  init meta mask alike web3 provider
+            t.browserWeb3Enabled = !!window.web3;
 
-            if (t.isMetaMaskEnabled) {
-                t.web3 = window.web3;
-            } else {
-                console.log("meta mask provider not available.");
+            if (t.browserWeb3Enabled) {
+                t.browserWeb3 = window.web3;
+                log("use MetaMask");
             }
 
-            // #  init site web3 provider
-            t.siteWeb3Provider = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-
-
-            // # instantiate the qr code plugin
-            t.qrGenerator = new EthereumQRPlugin();
-
-            // # start render rq codes.
-            t.renderQrCodes();
-
-            // # init contracts
-            t.bonusService = t.siteWeb3Provider.eth.contract(BonusServiceABI).at(ContractAddresses.BonusServiceImpl);
-            t.tokenService = t.siteWeb3Provider.eth.contract(TokenServiceABI).at(ContractAddresses.TokenServiceImpl);
-
-
-        },
-
-
-        // ## ===== bank ====
-        transfer2bank: function () {
-            console.log("transfer2bank");
-            let t = this;
-            t.sendEth(bankConfig);
-        },
-
-
-        // ## =================================== bonus ===================================
-        investBonus: function () {
-            console.log("investBonus");
-            let t = this;
-            t.sendEth(bonusInvestConfig);
-        },
-
-        divestBonus: function () {
-            console.log("divestBonus");
-            let t = this;
-            t.sendEth(bonusDivestConfig);
-        },
-        withdrawBonusProfit: function () {
-            console.log("withdrawBonusProfit");
-            let t = this;
-            t.sendEth(withdrawBonusProfitConfig);
-        },
-        viewUserBonus: function () {
-            let t = this;
-
-            let userAccount = "";
-            let userBonus = t.bonusService.getCurrentInvest.call(userAccount);
-
-        },
-
-        viewUserBonusProfit: function () {
-            let t = this;
-            let userAccount = "";
-            let userBonusProfit = t.bonusService.getCurrentProfit.call(userAccount);
-
-        },
-
-        // ##  =================================== token ===================================
-        investToken: function () {
-            console.log("investToken");
-            let t = this;
-            t.sendEth(tokenInvestConfig);
-        },
-
-        withdrawTokenProfit: function () {
-            console.log("withdrawTokenProfit");
-            let t = this;
-            t.sendEth(withdrawTokenProfitConfig);
-        },
-
-        viewUserTokenProfit: function () {
-
-        },
-
-        // ## ===================================  slot game ===================================
-        betSlot: function () {
-
-        },
-
-
-        // ##  =================================== utils ===================================
-        renderQrCodes: function () {
-
-            let t = this;
-            for (let i = 0; i < QrList.length; i++) {
-                t.drawQrCode(QrList[i]);
-            }
-
-        },
-
-        drawQrCode: function (config) {
-
-            let t = this;
-
-            const configDetails = {
-                size: 180,
-                selector: '#' + config.selector,
-                options: {
-                    margin: 2
-                }
-            };
-
-            const sendDetails = {
-                to: config.to,
-                value: t.web3.toWei(config.value, config.uom),
-                gas: config.gas
-            };
-
-            t.qrGenerator.toCanvas(sendDetails, configDetails);
-        },
-
-        sendEth: function (config) {
-            let t = this;
-            t.web3.eth.sendTransaction(
-                {
-                    to: config.to,
-                    value: t.web3.toWei(config.value, config.uom),
-                    gas: config.gas,
-                    data: t.web3.toHex(123)
-                },
-                function (error, hash) {
-                    if (error) {
-                        console.log("error happens");
-                        console.log(error);
-                    } else {
-                        console.log("tx ok");
-                        console.log(hash);
-                    }
-                    // config.callback(error, hash);
-                }
-            );
+            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider(Definitions.infuraProviderUrl));
 
         }
 
+        // # address role manages
+        , addAddressRole: function () {
 
+        }
+        , removeAddressRole: function () {
+
+        }
+
+        // # inner contract manage
+
+        // # period job manage
+        , changePeriod: function () {
+
+        }
+        , updatePeriodJobInterval: function () {
+
+        }
+
+        // # partner contract manage
+
+
+        // # configurations
+        , updateConfig: function () {
+
+        }
     }
 });
 
 
 $(function () {
-    vueApp.init();
+    try {
+        vueApp.init();
+    } catch (e) {
+        log(e);
+    }
 });

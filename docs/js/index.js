@@ -1,5 +1,13 @@
-//built at 2018-08-02 11:09:25
-let ContractAddresses = {
+//built at 2018-08-02 15:25:40
+let Definitions = {
+    infuraProviderUrl: "https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"
+};
+
+let log = function (obj) {
+    console.log("obj = " + obj);
+    console.log("obj.json = " + JSON.stringify(obj));
+};
+let ContractAddresses = {
     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
     BonusServiceImpl: '0x40160ddb05bb97ab04802f8470113ff24d92b911',
     CommonStorage: '0x21705d84182b45bbf4be8a61a1691300232b3139',
@@ -203,10 +211,10 @@ let vueApp = new Vue({
 
             if (t.browserWeb3Enabled) {
                 t.browserWeb3 = window.web3;
-                console.log("use MetaMask");
+                log("use MetaMask");
             }
 
-            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"));
+            t.providerWeb3 = new Web3(new Web3.providers.HttpProvider(Definitions.infuraProviderUrl));
 
             // # start render rq codes.
             QrCodeUtils.drawQrCodes(QrList, t.providerWeb3);
@@ -246,5 +254,9 @@ let vueApp = new Vue({
 
 
 $(function () {
-    vueApp.init();
+    try {
+        vueApp.init();
+    } catch (e) {
+        log(e);
+    }
 });
