@@ -1,4 +1,6 @@
 let ABIs = {
-    BonusServiceABI: "",
-    TokenServiceABI: "",
+    BonusServiceABI: ""
+    , TokenServiceABI: ""
+    , StorageServiceABI: ""
+    , ControlServiceABI: ""
 };

@@ -1,11 +1,12 @@
-//built at 2018-08-02 15:25:40
+//built at 2018-08-02 17:47:28
 let Definitions = {
     infuraProviderUrl: "https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"
 };
 
-let log = function (obj) {
-    console.log("obj = " + obj);
-    console.log("obj.json = " + JSON.stringify(obj));
+let log = function () {
+    console.log("-----------");
+    console.log(arguments);
+    console.log(JSON.stringify(arguments));
 };
 let ContractAddresses = {
     BonusDivestServiceImpl: '0x6312e4332f0c30d604fdde91e470d350b26255a2',
@@ -96,8 +97,9 @@ let TransactionConfigs = {
 };
 
 let ABIs = {
-    BonusServiceABI: "",
-    TokenServiceABI: "",
+    BonusServiceABI: ""
+    , TokenServiceABI: ""
+    , StorageServiceAPI: ""
 };
 
 let QrCodeUtils = {
