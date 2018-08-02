@@ -1,4 +1,4 @@
-//built at 2018-08-02 17:47:28
+//built at 2018-08-02 17:54:57
 let Definitions = {
     infuraProviderUrl: "https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"
 };
@@ -99,7 +99,8 @@ let TransactionConfigs = {
 let ABIs = {
     BonusServiceABI: ""
     , TokenServiceABI: ""
-    , StorageServiceAPI: ""
+    , StorageServiceABI: ""
+    , ControlServiceABI: ""
 };
 
 let QrCodeUtils = {

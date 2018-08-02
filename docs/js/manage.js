@@ -1,4 +1,4 @@
-//built at 2018-08-02 17:47:28
+//built at 2018-08-02 17:54:57
 let Definitions = {
     infuraProviderUrl: "https://ropsten.infura.io/qePENhv4I7T4cLaAUOVr"
 };
@@ -99,7 +99,8 @@ let TransactionConfigs = {
 let ABIs = {
     BonusServiceABI: ""
     , TokenServiceABI: ""
-    , StorageServiceAPI: ""
+    , StorageServiceABI: ""
+    , ControlServiceABI: ""
 };
 
 let Web3Utils = {
@@ -148,6 +149,7 @@ let vueApp = new Vue({
 
             // address role
             , userRoleAddress: -1
+            , userRole: -1
             // inner contract
 
             // period job
@@ -207,12 +209,16 @@ let vueApp = new Vue({
 
             // # address role manages
             ,
-            addAddressRole: function () {
-
+            grantAddressRole: function () {
+                // todo cc ControlService.grant
+                let t = this;
+                log(t.userRoleAddress, t.userRole);
             }
             ,
-            removeAddressRole: function () {
-
+            disGrantAddressRole: function () {
+                // todo cc ControlService.disgrant
+                let t = this;
+                log(t.userRoleAddress, t.userRole);
             }
 
             // # inner contract manage
