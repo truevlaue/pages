@@ -54,7 +54,7 @@
 - 启动job
 - 停止job
 - 更改job interval
-
+- 手动触发
 
 ## 个人中心
 - Bonus 投资金额
