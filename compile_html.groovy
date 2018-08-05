@@ -1,6 +1,9 @@
 // # define working dir root
 def rootPath = new File(".").getCanonicalPath()
 
+
+final String REPLACE_KEY = "CONTENT_TO_REPLACE"
+
 // # copy resources
 String sourceDir = "${rootPath}/src/res"
 String destinationDir = "${rootPath}/docs/res"
@@ -35,8 +38,8 @@ new File("${rootPath}/src/page_tpl.html").with { templateFile ->
     }
 }
 
-
-def buildDataFromMdFile(File file) {
+// convert md file to data map
+def buildDataFromMdFile(File file, boolean formatContent) {
 
     String dataText = file.text
 
@@ -44,51 +47,67 @@ def buildDataFromMdFile(File file) {
 
     def keys = []
 
-    String key = ""
-    String value = ""
+    String key = null
 
     dataText.eachLine { line ->
+
         // reach a new key line
         if (line.startsWith("##")) {
 
-            // finish before key
-            if (key) {
-                dataMap.put key, "${value}"
-            }
-
             // mark new key and truncate value
-            key = line.replaceAll("##", "")
-            value = ""
+            key = line.replaceAll("##", "").replaceAll(" ", "")
 
             // remember key orders
             keys.add(key)
 
         } else {
 
-            if ("images".equalsIgnoreCase(key)) {
 
+            if (!key)
+                return
 
-                List images = dataMap.get("images")
+            if (key.startsWith("images")) {
 
-                if (!images) {
+                List images = dataMap.get(key)
+
+                if (!images || images.size() == 0) {
                     images = []
-                    dataMap.put "images", images
+                    dataMap.put key, images
                 }
 
 
                 images.add(line)
 
+
             } else {
-                value += line
+
+
+                if (!dataMap.containsKey(key))
+                    dataMap.put(key, "")
+
+                String value = dataMap.get(key)
+
+                if (
+                formatContent &&
+                        key.indexOf("content") >= 0
+                ) {
+                    value += "${line}<br>"
+                } else {
+                    value += line
+                }
+
+
+                dataMap.put(key, value)
+
+
             }
         }
     }
 
 
-    if (!dataMap.containsKey(key))
-        dataMap.put key, "${value}"
-
-
+    println "${file.absolutePath}"
+    println "dataMap = ${dataMap}"
+    println "keys = ${keys}"
 
     return [
             dataMap: dataMap
@@ -97,7 +116,7 @@ def buildDataFromMdFile(File file) {
 }
 
 // # build widget tpl map
-Map widgetCodeMap = buildDataFromMdFile(new File("${rootPath}/src/widget_tpl.md")).dataMap
+Map widgetCodeMap = buildDataFromMdFile(new File("${rootPath}/src/widget_tpl.md"), false).dataMap
 widgetCodeMap.each { String key, String text ->
 
     text = text.replaceAll("```html", "")
@@ -114,7 +133,7 @@ new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
         return
 
     // build data
-    Map result = buildDataFromMdFile(dataFile)
+    Map result = buildDataFromMdFile(dataFile, true)
     Map dataMap = result.dataMap
     List keys = result.keys
 
@@ -124,21 +143,27 @@ new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
     String replaceContent = ""
 
 
-    keys.each { key ->
+    keys.each { String key ->
 
 
-        if (key == "images") {
+        String widgetType = key.indexOf(".") >= 0 ? key.split("\\.")[0] : key
+
+        if (widgetType == "images") {
             String widgetTpl = widgetCodeMap.get("image")
             List images = dataMap.get(key)
 
-            images.each { imageFileName ->
-                String widgetContent = widgetTpl.replaceAll("CONTENT_TO_REPLACE", imageFileName)
-                replaceContent = replaceContent + widgetContent
+            images.each { String imageFileName ->
+
+                if (imageFileName && imageFileName.trim().length() > 0) {
+                    String widgetContent = widgetTpl.replaceAll(REPLACE_KEY, imageFileName)
+                    replaceContent = replaceContent + widgetContent
+                }
             }
+
 
         } else {
 
-            String widgetTpl = widgetCodeMap.get(key)
+            String widgetTpl = widgetCodeMap.get(widgetType)
 
             if (!widgetTpl) {
                 widgetTpl = widgetCodeMap.get("common")
@@ -146,23 +171,27 @@ new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
 
 
             String dataStr = dataMap.get(key)
-            String widgetContent = widgetTpl.replaceAll("CONTENT_TO_REPLACE", dataStr)
+
+            String widgetContent = widgetTpl.replaceAll(REPLACE_KEY, dataStr)
 
 
             replaceContent = replaceContent + widgetContent
+
         }
 
     }
 
-    pageHtml = pageHtml.replaceAll("CONTENT_TO_REPLACE", replaceContent)
+
+
+    pageHtml = pageHtml.replaceAll(REPLACE_KEY, replaceContent)
 
     // add js and css
 
     def resMap = [
-            BOOTSTRAP_CSS_TO_REPLACE : "<link href=\"../../../../../res/css/bootstrap.min.css\" rel=\"stylesheet\">"
-            , CC_CSS_TO_REPLACE      : "<link href=\"../../../../../res/css/cc.css\" rel=\"stylesheet\">"
-            , JQUERY_TO_REPLACE      : "<script src=\"../../../../../res/js/jquery-3.3.1.min.js\"></script>"
-            , BOOTSTRAP_JS_TO_REPLACE: "<script src=\"../../../../../res/js/bootstrap.min.js\"></script>"
+            BOOTSTRAP_CSS_TO_REPLACE : "<link href=\"../../../../res/css/bootstrap.min.css\" rel=\"stylesheet\">"
+            , CC_CSS_TO_REPLACE      : "<link href=\"../../../../res/css/cc.css\" rel=\"stylesheet\">"
+            , JQUERY_TO_REPLACE      : "<script src=\"../../../../res/js/jquery-3.3.1.min.js\"></script>"
+            , BOOTSTRAP_JS_TO_REPLACE: "<script src=\"../../../../res/js/bootstrap.min.js\"></script>"
     ]
 
     resMap.each { key, value ->
@@ -171,7 +200,7 @@ new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
 
     // save complete compiled html file to docs target folder.
 
-    String targetFolderStr = dataDir.absolutePath.replaceAll("src/data", "docs/pages/detail")
+    String targetFolderStr = dataDir.absolutePath.replaceAll("src/data", "docs/detail")
     File targetFolder = new File(targetFolderStr)
     if (!targetFolder.exists())
         targetFolder.mkdirs()
@@ -192,5 +221,7 @@ new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
 
 
 }
+
+// todo cc generate list page ， category index and category list page
 
 
