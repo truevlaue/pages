@@ -1,78 +1,6 @@
 // # define working dir root
 def rootPath = new File(".").getCanonicalPath()
 
-// # timestamp
-def timestamp = "built at ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
-
-// # compile basic pages
-def htmlMap = [:]
-new File("${rootPath}/src").eachFile { file ->
-    if (!file.isDirectory()) {
-        def fileName = file.getName()
-        if (fileName.startsWith("_"))
-            htmlMap.put fileName, file.text
-    }
-
-}
-
-
-htmlMap.put "_RP_CURRENT_TIME", "${System.currentTimeMillis()}"
-
-new File("${rootPath}/src").eachFile { file ->
-    if (!file.isDirectory()) {
-        def fileName = file.getName()
-
-        if (!fileName.startsWith("_")) {
-            def html = file.text
-
-            htmlMap.each { name, text ->
-                html = html.replaceAll(name, text)
-            }
-
-            html = "<!--${timestamp}-->\n\r" + html
-
-            new File("${rootPath}/docs/${fileName}").newWriter().withWriter { w ->
-                w << html
-            }
-        }
-    }
-}
-
-// # compile js
-def jsMap = [:]
-new File("${rootPath}/src/js").eachFile { file ->
-    if (!file.isDirectory()) {
-        def fileName = file.getName()
-        if (fileName.startsWith("_"))
-            jsMap.put fileName, file.text
-    }
-}
-
-
-def gameFolder = new File("${rootPath}/docs/js")
-if (!gameFolder.exists())
-    gameFolder.mkdir()
-
-new File("${rootPath}/src/js").eachFile { file ->
-    if (!file.isDirectory()) {
-        def fileName = file.getName()
-
-        if (!fileName.startsWith("_")) {
-            def jsCode = file.text
-
-            jsMap.each { name, text ->
-                jsCode = jsCode.replaceAll("//${name}", text)
-            }
-
-            jsCode = "//${timestamp}\n\r" + jsCode
-
-            new File("${rootPath}/docs/js/${fileName}").newWriter().withWriter { w ->
-                w << jsCode
-            }
-        }
-    }
-}
-
 // # copy resources
 String sourceDir = "${rootPath}/src/res"
 String destinationDir = "${rootPath}/docs/res"
@@ -81,7 +9,188 @@ new AntBuilder().copy(todir: destinationDir) {
     fileset(dir: sourceDir)
 }
 
+// # compile basic pages
+def htmlReplaceMap = [:]
+new File("${rootPath}/src").eachFile { file ->
+    if (!file.isDirectory()) {
+        def fileName = file.getName()
+        if (fileName.startsWith("_"))
+            htmlReplaceMap.put fileName, file.text
+    }
 
-println "${timestamp} ended"
+}
+
+htmlReplaceMap.put "_RP_CURRENT_TIME", "${System.currentTimeMillis()}"
+
+// # generate page.html
+new File("${rootPath}/src/page_tpl.html").with { templateFile ->
+
+    def html = templateFile.text
+    htmlReplaceMap.each { name, text ->
+        html = html.replaceAll(name, text)
+    }
+
+    new File("${rootPath}/tmp/page.html").newWriter().withWriter { w ->
+        w << html
+    }
+}
+
+
+def buildDataFromMdFile(File file) {
+
+    String dataText = file.text
+
+    def dataMap = [:]
+
+    def keys = []
+
+    String key = ""
+    String value = ""
+
+    dataText.eachLine { line ->
+        // reach a new key line
+        if (line.startsWith("##")) {
+
+            // finish before key
+            if (key) {
+                dataMap.put key, "${value}"
+            }
+
+            // mark new key and truncate value
+            key = line.replaceAll("##", "")
+            value = ""
+
+            // remember key orders
+            keys.add(key)
+
+        } else {
+
+            if ("images".equalsIgnoreCase(key)) {
+
+
+                List images = dataMap.get("images")
+
+                if (!images) {
+                    images = []
+                    dataMap.put "images", images
+                }
+
+
+                images.add(line)
+
+            } else {
+                value += line
+            }
+        }
+    }
+
+
+    if (!dataMap.containsKey(key))
+        dataMap.put key, "${value}"
+
+
+
+    return [
+            dataMap: dataMap
+            , keys : keys
+    ]
+}
+
+// # build widget tpl map
+Map widgetCodeMap = buildDataFromMdFile(new File("${rootPath}/src/widget_tpl.md")).dataMap
+widgetCodeMap.each { String key, String text ->
+
+    text = text.replaceAll("```html", "")
+    text = text.replaceAll("```", "")
+    widgetCodeMap.put key, text
+}
+
+// # generate detail pages
+new File("${rootPath}/src/data").eachDirRecurse { dataDir ->
+
+
+    def dataFile = new File("${dataDir.absolutePath}/data.md")
+    if (!dataFile.exists())
+        return
+
+    // build data
+    Map result = buildDataFromMdFile(dataFile)
+    Map dataMap = result.dataMap
+    List keys = result.keys
+
+    // replace page with data
+    String pageHtml = new File("${rootPath}/tmp/page.html").text
+
+    String replaceContent = ""
+
+
+    keys.each { key ->
+
+
+        if (key == "images") {
+            String widgetTpl = widgetCodeMap.get("image")
+            List images = dataMap.get(key)
+
+            images.each { imageFileName ->
+                String widgetContent = widgetTpl.replaceAll("CONTENT_TO_REPLACE", imageFileName)
+                replaceContent = replaceContent + widgetContent
+            }
+
+        } else {
+
+            String widgetTpl = widgetCodeMap.get(key)
+
+            if (!widgetTpl) {
+                widgetTpl = widgetCodeMap.get("common")
+            }
+
+
+            String dataStr = dataMap.get(key)
+            String widgetContent = widgetTpl.replaceAll("CONTENT_TO_REPLACE", dataStr)
+
+
+            replaceContent = replaceContent + widgetContent
+        }
+
+    }
+
+    pageHtml = pageHtml.replaceAll("CONTENT_TO_REPLACE", replaceContent)
+
+    // add js and css
+
+    def resMap = [
+            BOOTSTRAP_CSS_TO_REPLACE : "<link href=\"../../../../../res/css/bootstrap.min.css\" rel=\"stylesheet\">"
+            , CC_CSS_TO_REPLACE      : "<link href=\"../../../../../res/css/cc.css\" rel=\"stylesheet\">"
+            , JQUERY_TO_REPLACE      : "<script src=\"../../../../../res/js/jquery-3.3.1.min.js\"></script>"
+            , BOOTSTRAP_JS_TO_REPLACE: "<script src=\"../../../../../res/js/bootstrap.min.js\"></script>"
+    ]
+
+    resMap.each { key, value ->
+        pageHtml = pageHtml.replaceAll(key, value)
+    }
+
+    // save complete compiled html file to docs target folder.
+
+    String targetFolderStr = dataDir.absolutePath.replaceAll("src/data", "docs/pages/detail")
+    File targetFolder = new File(targetFolderStr)
+    if (!targetFolder.exists())
+        targetFolder.mkdirs()
+
+
+    new File("${targetFolderStr}/i.html").newWriter().withWriter { w ->
+        w << pageHtml
+    }
+
+    // copy pics
+
+    String sourcePicDir = "${dataDir.absolutePath}/pics"
+    String destinationPicDir = "${targetFolderStr}/pics"
+
+    new AntBuilder().copy(todir: destinationPicDir) {
+        fileset(dir: sourcePicDir)
+    }
+
+
+}
 
 
